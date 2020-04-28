@@ -1,0 +1,85 @@
+    processor 6502
+
+    include "vcs.h"
+    include "macro.h"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Start out ROM code
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    seg code
+    org $F000       ; defines the origin of the ROM at $F000
+
+Reset:
+    CLEAN_START     ; Macro to safely clear the memory
+
+    ldx #$80        ; blue background color
+    stx COLUBK
+
+    lda $1C         ; yellow playfield color
+    sta COLUPF      
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Start a new frame by configuring VBLANK and VSYNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+StartFrame:
+    lda #02
+    sta VBLANK
+    sta VSYNC
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Generate the three scanlines of VSYNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    REPEAT 3
+    	sta WSYNC
+    REPEND
+    lda #0
+    sta VSYNC
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Generate the 37 recommended scanlines of VBLANK
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    REPEAT 37
+    	sta WSYNC
+    REPEND
+    lda #0
+    sta VBLANK
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set the CTRLPF Register to allow playfield reflection
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Draw the 192 visible scanlines
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+
+   ; Skip 7 scanlines with no PF set
+        
+   ; Set the PF0 to 1110 (LSB first) and PF1-POF2 as 1111 1111
+   
+   ; Set the next 164 lines only PF0 third bid enabled
+   
+   ; Set the PF0 to 1110 (LSB first) and PF1-POF2 as 1111 1111
+   
+   ; Skip 7 vertical lines with no PF set
+   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Output 30 more VBLANK overscan lines to complete out frame
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    lda #02
+    sta VBLANK
+    REPEAT 3
+    	sta WSYNC
+    REPEND
+    lda #0
+    sta VBLANK
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Complete Rom Size 4KB
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    org $FFFC
+    .word Reset
+    .word Reset
+
