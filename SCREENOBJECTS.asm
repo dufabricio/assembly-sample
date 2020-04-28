@@ -15,7 +15,7 @@ P1Height ds 1       ; defines one byte for player 1 height
 ;; Start out ROM code
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    seg
+    seg Code
     org $F000       ; defines the origin of the ROM at $F000
 
 Reset:
@@ -84,13 +84,13 @@ VisibleScanlines:
 ;; Displays 10 scanlines for the scoreboad number.
 ;; Pulls data from an array fo bytes defined at NumberBitmap.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-    ldy $0
+    ldy #0
 ScoreboardLoop:
     lda NumberBitmap,Y
     sta PF1
     sta WSYNC
     iny
-    cpy $9
+    cpy #10
     bne ScoreboardLoop
     
     lda #0
@@ -105,7 +105,7 @@ ScoreboardLoop:
 ;; Displays 10 scanlines for the Player 0 graphics.
 ;; Pulls data from an array fo bytes defined at NumberBitmap.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-    ldy $0
+    ldy #0
 Player0Loop:
     lda PlayerBitmap,Y
     sta GRP0
@@ -121,7 +121,7 @@ Player0Loop:
 ;; Displays 10 scanlines for the Player 0 graphics.
 ;; Pulls data from an array fo bytes defined at NumberBitmap.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-    ldy $0
+    ldy #0
 Player1Loop:
     lda PlayerBitmap,Y
     sta GRP1
