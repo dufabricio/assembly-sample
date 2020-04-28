@@ -4,6 +4,14 @@
     include "macro.h"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Start an unitialized segment at $80 for variable declaration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    seg.u Variables
+    org $80
+P0Height ds 1       ; defines one byte for player 0 height
+P1Height ds 1       ; defines one byte for player 1 height
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start out ROM code
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -19,6 +27,10 @@ Reset:
     lda #%1111      ; yellow playfield color
     sta COLUPF      
 
+    lda #10
+    sta P0Height
+    sta P1Height
+    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; We set the TIA registers for the colors of P0 and P1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -99,7 +111,7 @@ Player0Loop:
     sta GRP0
     sta WSYNC
     iny
-    cpy #10
+    cpy P0Height
     bne Player0Loop
     
     lda #0
@@ -115,7 +127,7 @@ Player1Loop:
     sta GRP1
     sta WSYNC
     iny
-    cpy #10
+    cpy P1Height
     bne Player1Loop
     
     lda #0
