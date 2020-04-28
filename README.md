@@ -13,4 +13,5 @@ Stella is the main option !
 However there are following options web-based :
 
 * https://javatari.org/
-* https://8bitworkshop.com/ - NICE !!!
+
+* https://8bitworkshop.com/ - NICE FOR STUDE ! :)
