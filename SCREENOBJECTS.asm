@@ -28,6 +28,9 @@ Reset:
     lda #$C6        ; player 1 color light green
     sta COLUP1
     
+    ldy #%00000010  ; CTRLPF D1 set to 1 means (score)
+    sty CTRLPF
+    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start a new frame by configuring VBLANK and VSYNC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -42,6 +45,7 @@ StartFrame:
     REPEAT 3
       sta WSYNC
     REPEND
+    
     lda #0
     sta VSYNC
 
@@ -51,6 +55,7 @@ StartFrame:
     REPEAT 37
       sta WSYNC
     REPEND
+    
     lda #0
     sta VBLANK
 
@@ -64,7 +69,7 @@ VisibleScanlines:
     REPEND
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Displays 1 -scanlines for the scoreboad number.
+;; Displays 10 scanlines for the scoreboad number.
 ;; Pulls data from an array fo bytes defined at NumberBitmap.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
     ldy $0
@@ -73,7 +78,7 @@ ScoreboardLoop:
     sta PF1
     sta WSYNC
     iny
-    cpy $10
+    cpy $9
     bne ScoreboardLoop
     
     lda #0
@@ -83,17 +88,53 @@ ScoreboardLoop:
     REPEAT 50
     	sta WSYNC
     REPEND
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Displays 10 scanlines for the Player 0 graphics.
+;; Pulls data from an array fo bytes defined at NumberBitmap.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    ldy $0
+Player0Loop:
+    lda PlayerBitmap,Y
+    sta GRP0
+    sta WSYNC
+    iny
+    cpy #10
+    bne Player0Loop
+    
+    lda #0
+    sta GRP0 ; disable player 0 graphics
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Displays 10 scanlines for the Player 0 graphics.
+;; Pulls data from an array fo bytes defined at NumberBitmap.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+    ldy $0
+Player1Loop:
+    lda PlayerBitmap,Y
+    sta GRP1
+    sta WSYNC
+    iny
+    cpy #10
+    bne Player1Loop
+    
+    lda #0
+    sta GRP1 ; disable player 0 graphics
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Draw the remaining 102 scanlines (192-90), since we already
+;; used 10+10+50+10+10=80 scanlines in the current frame
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    REPEAT 102
+       sta WSYNC
+    REPEND
    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Output 30 more VBLANK overscan lines to complete out frame
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-    lda #2
-    sta VBLANK
     REPEAT 30
     	sta WSYNC
     REPEND
-    lda #0
-    sta VBLANK
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Loop Nex Frame
@@ -106,7 +147,7 @@ ScoreboardLoop:
 ;; We add these bytes in the last ROM addresses.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
     org $FFE8
-PlayerBitMap:
+PlayerBitmap:
     .byte #%01111110
     .byte #%11111111
     .byte #%10011001
